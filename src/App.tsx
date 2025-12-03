@@ -6,13 +6,13 @@ import HeaderUI from './components/HeaderUI';
 import AlertUI from './components/AlertUI';
 import SelectorUI from './components/SelectorUI';
 import IndicatorUI from './components/IndicatorUI';
-import DataFetcher from './functions/DataFetcher';
+import useFetchData from './functions/useFetchData';
 
 import { Grid } from '@mui/material';
 
 function App() {
-  //const [count, setCount] = useState(0)
-  const dataFetcherOutput = DataFetcher();
+  //const [count, setCount] = useState(0)  
+  const dataFetcherOutput = useFetchData();
 
   return (
     <Grid container spacing={5} justifyContent="center" alignItems="center">

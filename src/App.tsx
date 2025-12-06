@@ -1,4 +1,4 @@
-//import { useState } from 'react'
+import { useState, useEffect } from 'react'
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
 import './App.css'
@@ -10,10 +10,18 @@ import useFetchData from './functions/useFetchData';
 import TableUI from './components/TableUI'; // Importación
 import ChartUI from './components/ChartUI'; // Importación
 
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 function App() {
-  //const [count, setCount] = useState(0)  
+  //const [count, setCount] = useState(0)    
+  const [localTime, setLocalTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLocalTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
   const dataFetcherOutput = useFetchData(); // { data, loading, error }
 
   return (
@@ -33,12 +41,12 @@ function App() {
       <Grid size={{ xs: 12, md: 3 }}>
         <SelectorUI />
       </Grid>
-     
-      <Grid container size={{ xs: 12, md: 9 }} >        
+
+      <Grid container size={{ xs: 12, md: 9 }} >
         {dataFetcherOutput.loading && <p>Cargando datos...</p>}
-        {dataFetcherOutput.error && <p>Error: {dataFetcherOutput.error}</p>}        
+        {dataFetcherOutput.error && <p>Error: {dataFetcherOutput.error}</p>}
         {dataFetcherOutput.data && (
-          <>        
+          <>
 
             <Grid size={{ xs: 12, md: 3 }} >
               <IndicatorUI
@@ -80,8 +88,19 @@ function App() {
       </Grid>
 
       {/* Información adicional */}
-      <Grid size={{ xs: 12, md: 12 }}>Elemento: Información adicional</Grid>
+      <Grid size={{ xs:12 ,md:12 }}>
 
+        <Typography variant="caption" display="block" gutterBottom>
+          Hora de Visita Local: {localTime.toLocaleTimeString()}
+        </Typography>
+        {dataFetcherOutput.data && (
+          <Typography variant="caption" display="block" gutterBottom>
+            Última Actualización de Datos: {new Date(dataFetcherOutput.data.current.time).toLocaleString()}.
+            Fuente: Open-Meteo. (Latitud: {dataFetcherOutput.data.latitude}, Longitud: {dataFetcherOutput.data.longitude}).
+          </Typography>
+        )}
+      </Grid>
+      
     </Grid>
   )
 }

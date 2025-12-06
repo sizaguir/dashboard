@@ -7,6 +7,8 @@ import AlertUI from './components/AlertUI';
 import SelectorUI from './components/SelectorUI';
 import IndicatorUI from './components/IndicatorUI';
 import useFetchData from './functions/useFetchData';
+import TableUI from './components/TableUI';
+import ChartUI from './components/ChartUI';
 
 import { Grid } from '@mui/material';
 
@@ -75,11 +77,13 @@ function App() {
 
       {/* Gráfico */}
       <Grid sx={{ display: { xs: "none", md: "block" } }} >
-        Elemento: Gráfico
+        <ChartUI />
       </Grid>
 
       {/* Tabla */}
-      <Grid sx={{ display: { xs: "none", md: "block" } }} >Elemento: Tabla</Grid>
+      <Grid sx={{ display: { xs: "none", md: "block" } }} >
+        <TableUI />
+        </Grid>
 
       {/* Información adicional */}
       <Grid size={{ xs: 12, md: 12 }}>Elemento: Información adicional</Grid>

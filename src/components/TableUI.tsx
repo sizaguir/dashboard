@@ -1,66 +1,83 @@
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import { type OpenMeteoResponse } from '../types/DashboardTypes'; // Asegúrate de que esta ruta y tipo sean correctos
 
-function combineArrays(arrLabels: Array<string>, arrValues1: Array<number>, arrValues2: Array<number>) {
-   return arrLabels.map((label, index) => ({
-      id: index,
-      label: label,
-      value1: arrValues1[index],
-      value2: arrValues2[index]
-   }));
+type TableUIProps = {
+    data: OpenMeteoResponse | null;
+    loading: boolean;
+    error: string | null;
+};
+
+function transformHourlyData(data: OpenMeteoResponse) {
+    const time = data.hourly.time;
+    const temperature = data.hourly.temperature_2m;
+    const tempUnit = data.hourly_units.temperature_2m;
+
+    return time.map((t, index) => ({
+        id: index,        
+        time: t.substring(t.indexOf('T') + 1, t.lastIndexOf(':')),       
+        date: t.substring(0, t.indexOf('T')), 
+        temperature: temperature[index],
+        unit: tempUnit,
+    }));
 }
 
 const columns: GridColDef[] = [
-   { field: 'id', headerName: 'ID', width: 90 },
-   {
-      field: 'label',
-      headerName: 'Label',
-      width: 150,
-   },
-   {
-      field: 'value1',
-      headerName: 'Value 1',
-      width: 150,
-   },
-   {
-      field: 'value2',
-      headerName: 'Value 2',
-      width: 150,
-   },
-   {
-      field: 'resumen',
-      headerName: 'Resumen',
-      description: 'No es posible ordenar u ocultar esta columna.',
-      sortable: false,
-      hideable: false,
-      width: 160,
-      valueGetter: (_, row) => `${row.label || ''} ${row.value1 || ''} ${row.value2 || ''}`,
-   },
+    { field: 'id', headerName: 'ID', width: 50 },
+    {
+        field: 'date',
+        headerName: 'Fecha',
+        width: 120,
+    },
+    {
+        field: 'time',
+        headerName: 'Hora',
+        width: 100,
+    },
+    {
+        field: 'temperature',
+        headerName: 'Temperatura (2m)',
+        width: 150,        
+        valueGetter: (_, row) => `${row.temperature} ${row.unit}`,
+    },
 ];
 
-const arrValues1 = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const arrValues2 = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const arrLabels = ['A','B','C','D','E','F','G'];
+export default function TableUI({ data, loading, error }: TableUIProps) {    
+    if (loading) {
+        return <Typography variant="body1">Cargando datos de la tabla...</Typography>;
+    }
 
-export default function TableUI() {
+    if (error) {
+        return <Typography color="error" variant="body1">Error al cargar la tabla: {error}</Typography>;
+    }
 
-   const rows = combineArrays(arrLabels, arrValues1, arrValues2);
+    if (!data) {
+        return <Typography variant="body1">No hay datos disponibles para la tabla.</Typography>;
+    }
 
-   return (
-      <Box sx={{ height: 350, width: '100%' }}>
-         <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-               pagination: {
-                  paginationModel: {
-                     pageSize: 5,
-                  },
-               },
-            }}
-            pageSizeOptions={[5]}
-            disableRowSelectionOnClick
-         />
-      </Box>
-   );
+    const rows = transformHourlyData(data);
+
+    return (
+        <>
+            <Typography variant="h5" component="div" sx={{ mb: 2 }}>
+                Temperatura por Hora
+            </Typography>
+            <Box sx={{ height: 400, width: '100%' }}>
+                <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    initialState={{
+                        pagination: {
+                            paginationModel: {
+                                pageSize: 7, 
+                            },
+                        },
+                    }}
+                    pageSizeOptions={[5, 7, 10]}
+                    disableRowSelectionOnClick
+                />
+            </Box>
+        </>
+    );
 }

@@ -7,14 +7,14 @@ import AlertUI from './components/AlertUI';
 import SelectorUI from './components/SelectorUI';
 import IndicatorUI from './components/IndicatorUI';
 import useFetchData from './functions/useFetchData';
-import TableUI from './components/TableUI';
-import ChartUI from './components/ChartUI';
+import TableUI from './components/TableUI'; // Importación
+import ChartUI from './components/ChartUI'; // Importación
 
 import { Grid } from '@mui/material';
 
 function App() {
-  //const [count, setCount] = useState(0)  
-  const dataFetcherOutput = useFetchData();
+  //const [count, setCount] = useState(0)  
+  const dataFetcherOutput = useFetchData(); // { data, loading, error }
 
   return (
     <Grid container spacing={5} justifyContent="center" alignItems="center">
@@ -33,18 +33,12 @@ function App() {
       <Grid size={{ xs: 12, md: 3 }}>
         <SelectorUI />
       </Grid>
-
-      {/* Indicadores */}
-      <Grid container size={{ xs: 12, md: 9 }} >
-
-        {/* Renderizado condicional de los datos obtenidos */}
-
+     
+      <Grid container size={{ xs: 12, md: 9 }} >        
         {dataFetcherOutput.loading && <p>Cargando datos...</p>}
-        {dataFetcherOutput.error && <p>Error: {dataFetcherOutput.error}</p>}
+        {dataFetcherOutput.error && <p>Error: {dataFetcherOutput.error}</p>}        
         {dataFetcherOutput.data && (
-          <>
-
-            {/* Indicadores con datos obtenidos */}
+          <>        
 
             <Grid size={{ xs: 12, md: 3 }} >
               <IndicatorUI
@@ -76,14 +70,14 @@ function App() {
       </Grid>
 
       {/* Gráfico */}
-      <Grid sx={{ display: { xs: "none", md: "block" } }} >
-        <ChartUI />
+      <Grid size={{ xs: 12, md: 12 }} >
+        <ChartUI {...dataFetcherOutput} /> {/* Pasa { data, loading, error } */}
       </Grid>
 
       {/* Tabla */}
-      <Grid sx={{ display: { xs: "none", md: "block" } }} >
-        <TableUI />
-        </Grid>
+      <Grid size={{ xs: 12, md: 12 }} >
+        <TableUI {...dataFetcherOutput} /> {/* Pasa { data, loading, error } */}
+      </Grid>
 
       {/* Información adicional */}
       <Grid size={{ xs: 12, md: 12 }}>Elemento: Información adicional</Grid>
@@ -91,5 +85,4 @@ function App() {
     </Grid>
   )
 }
-
 export default App

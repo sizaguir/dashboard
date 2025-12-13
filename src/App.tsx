@@ -16,13 +16,18 @@ function App() {
   //const [count, setCount] = useState(0)    
   const [localTime, setLocalTime] = useState(new Date());
 
+  // Utilice una variable de estado para almacenar la opción seleccionada por el usuario
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  // Comunique la opción seleccionada al hook useFetchData
+  const dataFetcherOutput = useFetchData(selectedOption);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setLocalTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
-  const dataFetcherOutput = useFetchData(); // { data, loading, error }
+  }, []);  
 
   return (
     <Grid container spacing={5} justifyContent="center" alignItems="center">
@@ -39,7 +44,7 @@ function App() {
 
       {/* Selector */}
       <Grid size={{ xs: 12, md: 3 }}>
-        <SelectorUI />
+        <SelectorUI onOptionSelect={setSelectedOption} />
       </Grid>
 
       <Grid container size={{ xs: 12, md: 9 }} >
@@ -95,12 +100,12 @@ function App() {
         </Typography>
         {dataFetcherOutput.data && (
           <Typography variant="caption" display="block" gutterBottom>
-            Última Actualización de Datos: {new Date(dataFetcherOutput.data.current.time).toLocaleString()}.
+            Última Actualización de Datos: {new Date(dataFetcherOutput.data.current.time).toLocaleString()} 
             Fuente: Open-Meteo. (Latitud: {dataFetcherOutput.data.latitude}, Longitud: {dataFetcherOutput.data.longitude}).
           </Typography>
         )}
       </Grid>
-      
+
     </Grid>
   )
 }
